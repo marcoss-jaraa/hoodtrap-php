@@ -1,5 +1,10 @@
 # Proyecto Base - PDISC 7° Año 4° División
 
+°Integrantes 
+-Rodriguez Jara Marcos
+-Leiva Ignacio
+-Cotone Santiago
+
 Este es un proyecto base en PHP pensado para que los alumnos trabajen con una aplicación simple de autenticación. Incluye:
 
 - Un formulario de registro.
