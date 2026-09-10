@@ -10,13 +10,16 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {  // Si la solicitud no es POST, vol
 // Paso clave #2: Tomar datos -----------------------------------
 $data = [
   'email'           => trim($_POST['email'] ?? ''), // trim(str) saca los espacios al inicio y al final
-  'name'            => trim($_POST['name'] ?? ''),
   'password'        => $_POST['password'] ?? '',
-  'repeatPassword'  => $_POST['password'] ?? ''
 ];
 
-try {  header('Location: /src/views/index.php');
-  exit;
+try {
+    
 } catch (PDOException $e) {
   exit;
 }
+// paso 3: validad que el usuario existe en la DB
+
+//Paso 4 Verificar la contraseña
+
+//Paso 5: 
