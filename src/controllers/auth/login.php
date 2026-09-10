@@ -1,4 +1,4 @@
-<?php
+<?php 
 require_once __DIR__ . '/../../config/bootstrap.php';
 
 // Paso clave #1: Validar tipo de solicitud ----------------------

@@ -1,29 +1,41 @@
 <?php
-include('../_layouts/auth.layout.php');
-?>
+require_once __DIR__ . '/../../config/bootstrap.php';
 
-<div class="text-center mb-4">
-  <img src="/assets/img/php-logo.png" alt="Logo" width="60" class="mb-2">
-  <h1 class="h4 mb-0">PDISC</h1>
-  <p class="text-muted small">Ingresá con tu cuenta</p>
-</div>
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+  header('Location: /src/views/auth/login.php');
+  exit;
+}
 
-<form action="/src/controllers/auth/login.php" method="POST">
-  <div class="mb-3">
-    <label for="email" class="form-label">E-mail</label>
-    <input type="email" class="form-control" id="email" name="email" required autofocus>
-  </div>
+$email = trim($_POST['email'] ?? '');
+$password = $_POST['password'] ?? '';
 
-  <div class="mb-3">
-    <label for="password" class="form-label">Contraseña</label>
-    <input type="password" class="form-control" id="password" name="password" required>
-  </div>
+if ($email === '' || $password === '') {
+  header('Location: /src/views/auth/login.php');
+  exit;
+}
 
-  <button type="submit" class="btn btn-primary w-100">Ingresar</button>
-</form>
+try {
+  $stmt = $pdo->prepare('SELECT id, name, email, password FROM users WHERE email = :email LIMIT 1');
+  $stmt->execute([
+    'email' => $email
+  ]);
 
-<br />
+  $user = $stmt->fetch();
 
-<div class="text-center">
-  <p class="text-muted small">¿No tienes una cuenta? <a href="/src/views/auth/register.php">¡Registrate ahora!</a></p>
-</div>
+  if (!$user || !password_verify($password, $user['password'])) {
+    header('Location: /src/views/auth/login.php');
+    exit;
+  }
+
+  $_SESSION['user'] = [
+    'id' => $user['id'],
+    'name' => $user['name'],
+    'email' => $user['email']
+  ];
+
+  header('Location: /src/views/index.php');
+  exit;
+} catch (PDOException $e) {
+  header('Location: /src/views/auth/login.php');
+  exit;
+}
