@@ -1,100 +1,148 @@
-
 <?php
-require_once __DIR__ . '/../../config/bootstrap.php';
+include('../_layouts/auth.layout.php');
+?>
 
-// Paso clave #1: Validar tipo de solicitud ----------------------
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-  // Si la solicitud no es POST, volvemos al register
-  header('Location: /src/views/auth/register.php');
-  exit;
-}
+<div class="text-center mb-4">
 
-// Paso clave #2: Tomar datos -----------------------------------
-$data = [
-  'email'          => trim($_POST['email'] ?? ''),
-  'name'           => trim($_POST['name'] ?? ''),
-  'password'       => $_POST['password'] ?? '',
-  'repeatPassword' => $_POST['repeatPassword'] ?? ''
-];
+  <img
+    src="/assets/img/php-logo.png"
+    alt="Logo PDISC"
+    class="auth-logo"
+  >
 
-// Validaciones básicas
-if ($data['name'] === '') {
-  exit('El nombre es obligatorio.');
-}
+  <h1 class="h4 auth-title mb-1">
+    Crear una cuenta
+  </h1>
 
-if (strlen($data['name']) > 50) {
-  exit('El nombre no puede superar los 50 caracteres.');
-}
+  <p class="auth-subtitle mb-0">
+    Completá tus datos para registrarte
+  </p>
 
-if ($data['email'] === '') {
-  exit('El email es obligatorio.');
-}
+</div>
 
-if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
-  exit('El email no es válido.');
-}
 
-if (strlen($data['email']) > 150) {
-  exit('El email no puede superar los 150 caracteres.');
-}
+<form
+  action="/src/controllers/auth/register.php"
+  method="POST"
+  class="auth-form"
+>
 
-if ($data['password'] === '') {
-  exit('La contraseña es obligatoria.');
-}
+  <div class="mb-3">
 
-if ($data['repeatPassword'] === '') {
-  exit('Debes repetir la contraseña.');
-}
+    <label
+      for="email"
+      class="form-label fw-semibold"
+    >
+      E-mail
+    </label>
 
-if ($data['password'] !== $data['repeatPassword']) {
-  exit('Las contraseñas no coinciden.');
-}
+    <input
+      type="email"
+      class="form-control"
+      id="email"
+      name="email"
+      placeholder="ejemplo@email.com"
+      required
+      autofocus
+    >
 
-// Paso clave #3: Hacer cosas ----------------------------------
-try {
-  // Validamos que el usuario no exista
-  $stmt = $pdo->prepare(
-    'SELECT id FROM users WHERE email = :email LIMIT 1'
-  );
+  </div>
 
-  $stmt->execute([
-    'email' => $data['email']
-  ]);
 
-  if ($stmt->fetch()) {
-    exit('Ya existe un usuario registrado con ese email.');
-  }
+  <div class="mb-3">
 
-  // Hasheamos la contraseña, nunca se guarda en texto plano
-  $hashedPassword = password_hash(
-    $data['password'],
-    PASSWORD_DEFAULT
-  );
+    <label
+      for="name"
+      class="form-label fw-semibold"
+    >
+      Usuario
+    </label>
 
-  // Insertamos en DB
-  $stmt = $pdo->prepare(
-    'INSERT INTO users (name, email, password)
-     VALUES (:name, :email, :password)'
-  );
+    <input
+      type="text"
+      class="form-control"
+      id="name"
+      name="name"
+      placeholder="Ingresá tu usuario"
+      required
+    >
 
-  $stmt->execute([
-    'name'     => $data['name'],
-    'email'    => $data['email'],
-    'password' => $hashedPassword,
-  ]);
+  </div>
 
-  // Cargamos $_SESSION['user'], para poder pasar al index
-  $_SESSION['user'] = [
-    'id'    => $pdo->lastInsertId(),
-    'name'  => $data['name'],
-    'email' => $data['email'],
-  ];
 
-  // Pateado para el index
-  header('Location: /src/views/index.php');
-  exit;
+  <div class="mb-3">
 
-} catch (PDOException $e) {
-  exit;
-}
-```
+    <label
+      for="password"
+      class="form-label fw-semibold"
+    >
+      Contraseña
+    </label>
+
+    <input
+      type="password"
+      class="form-control"
+      id="password"
+      name="password"
+      placeholder="Ingresá una contraseña"
+      required
+    >
+
+  </div>
+
+
+  <div class="mb-4">
+
+    <label
+      for="repeatPassword"
+      class="form-label fw-semibold"
+    >
+      Repetí tu contraseña
+    </label>
+
+    <input
+      type="password"
+      class="form-control"
+      id="repeatPassword"
+      name="repeatPassword"
+      placeholder="Repetí tu contraseña"
+      required
+    >
+
+  </div>
+
+
+  <button
+    type="submit"
+    class="btn btn-primary auth-button w-100"
+  >
+    Crear cuenta
+  </button>
+
+</form>
+
+
+<div class="text-center mt-4">
+
+  <p class="text-muted small mb-0">
+
+    ¿Ya tenés una cuenta?
+
+    <a
+      href="/src/views/auth/login.php"
+      class="auth-link"
+    >
+      Iniciá sesión
+    </a>
+
+  </p>
+
+</div>
+
+
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
